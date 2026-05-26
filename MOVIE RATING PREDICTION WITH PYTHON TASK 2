@@ -1,0 +1,71 @@
+## import dataset
+import pandas as pd
+
+df = pd.read_csv("movies.csv")
+df.head()
+
+##data Cleaning
+# Fill missing numeric values with median
+df['budget'] = df['budget'].fillna(df['budget'].median())
+df['gross'] = df['gross'].fillna(df['gross'].median())
+df['runtime'] = df['runtime'].fillna(df['runtime'].median())
+
+# Drop duplicates
+df.drop_duplicates(inplace=True)
+
+##Feature Engineering
+#Convert categorical features into numeric codes.
+from sklearn.preprocessing import LabelEncoder
+
+for col in ['genre','director','star']:
+    df[col] = LabelEncoder().fit_transform(df[col])
+df['profit_margin'] = (df['gross'] - df['budget']) / df['budget']
+df['movie_age'] = 2026 - df['released']
+
+##Exploratory Data Analysis (EDA)
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Correlation heatmap
+plt.figure(figsize=(10,6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap of Movie Features")
+plt.show()
+
+# Genre vs Rating
+plt.figure(figsize=(10,6))
+sns.boxplot(x='genre', y='score', data=df)
+plt.title("Movie Ratings by Genre")
+plt.show()
+
+# Budget vs Rating
+sns.scatterplot(x='budget', y='score', data=df)
+plt.title("Budget vs Rating")
+plt.show()
+
+## Modeling
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+X = df[['genre','director','star','budget','gross','runtime','votes']]
+y = df['score']   # IMDb rating
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print("R² Score:", r2_score(y_test, y_pred))
+print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
+
+##Prediction Visualization
+sns.scatterplot(x=y_test, y=y_pred)
+plt.xlabel("Actual Ratings")
+plt.ylabel("Predicted Ratings")
+plt.title("Movie Rating Prediction Performance")
+plt.show()
+
+
