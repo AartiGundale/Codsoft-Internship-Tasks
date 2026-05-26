@@ -12,7 +12,7 @@ This project analyzes Titanic passenger data to predict survival outcomes using 
 - Predictive model performance metrics
 - Confusion matrix and accuracy KPIs
 
-## 🚀 How to Use
+## How to Use
 1. Download `titanic.csv` from Kaggle.
 2. Open `Titanic_Survival.pbix` in Power BI Desktop.
 3. Run the Python script inside Power BI to generate predictions.
