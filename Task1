@@ -1,0 +1,44 @@
+## Load the dataset (CSV from Kaggle) into a relational database like MySQL or SQLite.
+CREATE TABLE Titanic (
+    PassengerId INT PRIMARY KEY,
+    Survived INT,          -- 0 = No, 1 = Yes
+    Pclass INT,            -- Ticket class (1, 2, 3)
+    Name VARCHAR(100),
+    Sex VARCHAR(10),
+    Age FLOAT,
+    SibSp INT,             -- # of siblings/spouses aboard
+    Parch INT,             -- # of parents/children aboard
+    Ticket VARCHAR(20),
+    Fare FLOAT,
+    Cabin VARCHAR(20),
+    Embarked VARCHAR(5)    -- Port of Embarkation (C, Q, S)
+);
+
+##Overall survival rate:
+SELECT AVG(Survived) AS SurvivalRate
+FROM Titanic;
+
+##Survival by gender:
+SELECT Sex, AVG(Survived) AS SurvivalRate
+FROM Titanic
+GROUP BY Sex;
+
+##Survival by class:
+SELECT Pclass, AVG(Survived) AS SurvivalRate
+FROM Titanic
+GROUP BY Pclass;
+
+##Survival by age group:
+SELECT CASE
+         WHEN Age < 12 THEN 'Child'
+         WHEN Age BETWEEN 12 AND 18 THEN 'Teen'
+         WHEN Age BETWEEN 19 AND 50 THEN 'Adult'
+         ELSE 'Senior'
+       END AS AgeGroup,
+       AVG(Survived) AS SurvivalRate
+FROM Titanic
+GROUP BY AgeGroup;
+
+##Preparing for Prediction
+SELECT Survived, Pclass, Sex, Age, Fare, FamilySize, IsAlone, Embarked
+FROM Titanic;
