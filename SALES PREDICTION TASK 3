@@ -1,0 +1,56 @@
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("Advertising.csv")
+print(df.head())
+
+# Handle missing values and check correlations.
+df.isnull().sum()   # Check missing values
+df.describe()       # Summary statistics
+
+#EDA
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Correlation heatmap
+plt.figure(figsize=(8,6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
+
+# Advertising spend vs Sales
+sns.scatterplot(x=df['TV'], y=df['Sales'])
+plt.title("TV Advertising vs Sales")
+plt.show()
+
+df['TotalSpend'] = df['TV'] + df['Radio'] + df['Newspaper']
+df['TV_Radio_Interaction'] = df['TV'] * df['Radio']
+
+#Train-Test Split
+from sklearn.model_selection import train_test_split
+
+X = df[['TV','Radio','Newspaper','TotalSpend','TV_Radio_Interaction']]
+y = df['Sales']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+#Build Regression Model
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print("R² Score:", r2_score(y_test, y_pred))
+print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
+
+#Prediction Visualization
+sns.scatterplot(x=y_test, y=y_pred)
+plt.xlabel("Actual Sales")
+plt.ylabel("Predicted Sales")
+plt.title("Sales Prediction Performance")
+plt.show()
+
+
